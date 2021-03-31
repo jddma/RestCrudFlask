@@ -10,7 +10,7 @@ import json
 
 class Crud():
 
-    def open_connection(self):
+    def __open_connection(self):
         try:
             self.__connection = pymysql.connect(
                 host=os.environ["MY_HOST"],
@@ -24,11 +24,12 @@ class Crud():
             logging.fatal('Error al obtener las credenciales de la base de datos')
             sys.exit()
 
-    def close_connection(self):
+    def __close_connection(self):
         self.__connection.close()
 
+    #Método para obtener los registros de la BD
     def read(self):
-        self.open_connection()
+        self.__open_connection()
 
         cursor = self.__connection.cursor()
         sql = 'SELECT id, user FROM user'
@@ -36,7 +37,24 @@ class Crud():
         data = []
         for i in cursor:
             data.append(i)
+        cursor.close()
 
-        self.close_connection()
+        self.__close_connection()
 
-        return data
+        return json.dumps(data)
+
+    def create(self, data: str):
+        data_dic = json.loads(data)
+
+        self.__open_connection()
+
+        cursor = self.__connection.cursor()
+        sql = 'INSERT INTO user (user, password) VALUES (%s, %s)'
+        cursor.execute(sql, (data_dic['user'], data_dic['password']))
+        cursor.close()
+
+        self.__connection.commit()
+        self.__connection.close()
+
+        response = {"status": "ok"}
+        return json.dumps(response)
