@@ -24,8 +24,12 @@ if __name__ == '__main__':
             response.headers['Content-Type'] = 'application/json'
             return response
         elif request.method == 'PUT':
-            pass
+            response = make_response(crud.update(request.data.decode()))
+            response.headers['Content-Type'] = 'application/json'
+            return response
         elif request.method == 'DELETE':
-            pass
+            response = make_response(crud.delete(request.data.decode()))
+            response.headers['Content-Type'] = 'application/json'
+            return response
 
     app.run(debug=True)

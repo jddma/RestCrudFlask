@@ -54,7 +54,39 @@ class Crud():
         cursor.close()
 
         self.__connection.commit()
-        self.__connection.close()
+        self.__close_connection()
+
+        response = {"status": "ok"}
+        return json.dumps(response)
+
+    def update(self, data: str):
+        data_dic = json.loads(data)
+
+        self.__open_connection()
+
+        cursor = self.__connection.cursor()
+        sql = "UPDATE user SET user = %s, password = %s WHERE id = %s"
+        cursor.execute(sql, (data_dic['user'], data_dic['password'], data_dic['id']))
+        cursor.close()
+
+        self.__connection.commit()
+        self.__close_connection()
+
+        response = {"status": "ok"}
+        return json.dumps(response)
+
+    def delete(self, data: str):
+        data_dic = json.loads(data)
+
+        self.__open_connection()
+
+        cursor = self.__connection.cursor()
+        sql = 'DELETE FROM user WHERE id = %s'
+        cursor.execute(sql, (data_dic['id']))
+        cursor.close()
+
+        self.__connection.commit()
+        self.__close_connection()
 
         response = {"status": "ok"}
         return json.dumps(response)
